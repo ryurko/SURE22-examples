@@ -104,9 +104,89 @@ ggdendrogram(nba_complete_hclust, labels = FALSE, leaf_labels = FALSE,
   theme(axis.text.x = element_blank(),
         axis.title.x = element_blank(),
         axis.ticks.x = element_blank(),
-        panel.grid = element_blank())
+        panel.grid = element_blank()) +
+  geom_hline(yintercept = 21, linetype = "dashed", color = "darkred")
+
+nba_filtered_stats %>%
+  mutate(player_clusters = 
+           as.factor(cutree(nba_complete_hclust, h = 21))) %>%
+  ggplot(aes(x = x3pa, y = trb, color = player_clusters)) +
+  geom_point(alpha = 0.5) +
+  ggthemes::scale_color_colorblind() +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+nba_single_hclust <-
+  hclust(player_dist, method = "single")
+
+ggdendrogram(nba_single_hclust, labels = FALSE, leaf_labels = FALSE,
+             theme_dendro = FALSE) +
+  labs(y = "Dissimilarity between clusters") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank()) 
+
+nba_filtered_stats %>%
+  mutate(player_clusters = 
+           as.factor(cutree(nba_single_hclust, k = 4))) %>%
+  ggplot(aes(x = x3pa, y = trb, color = player_clusters)) +
+  geom_point(alpha = 0.5) +
+  ggthemes::scale_color_colorblind() +
+  theme_bw() +
+  theme(legend.position = "bottom")
 
 
+
+# Minimax linkage clustering example --------------------------------------
+
+library(protoclust)
+
+
+nba_protoclust <- protoclust(player_dist)
+
+ggdendrogram(nba_protoclust, labels = FALSE, leaf_labels = FALSE,
+             theme_dendro = FALSE) +
+  labs(y = "Dissimilarity between clusters") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank()) 
+
+minimax_player_clusters <- protocut(nba_protoclust, k = 3)
+
+nba_filtered_stats %>%
+  mutate(player_clusters = 
+           as.factor(minimax_player_clusters$cl)) %>%
+  ggplot(aes(x = x3pa, y = trb, color = player_clusters)) +
+  geom_point(alpha = 0.5) +
+  ggthemes::scale_color_colorblind() +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+nba_prototypes <- nba_filtered_stats %>%
+  slice(minimax_player_clusters$protos)
+
+nba_filtered_stats %>%
+  mutate(player_clusters = 
+           as.factor(minimax_player_clusters$cl)) %>%
+  ggplot(aes(x = x3pa, y = trb, color = player_clusters)) +
+  geom_point(alpha = 0.5) +
+  # geom_point(data = mutate(nba_prototypes, 
+  #                          player_clusters = as.factor(c(1, 2, 3))),
+  #            size = 5) +
+  geom_label(data = mutate(nba_prototypes, 
+                           player_clusters = as.factor(c(1, 2, 3))),
+             aes(label = player)) +
+  ggthemes::scale_color_colorblind() +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+table("Clusters" = minimax_player_clusters$cl,
+      "Positions" = nba_filtered_stats$pos)
 
 
 
