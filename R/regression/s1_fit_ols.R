@@ -31,6 +31,15 @@ gdp_plot <- clean_gapminder %>%
 init_lm <- lm(life_expectancy ~ log_gdp, data = clean_gapminder)
 summary(init_lm)
 
+no_int_lm <- lm(life_expectancy ~ 0 + log_gdp, data = clean_gapminder)
+
+
+gdp_plot <- clean_gapminder %>%
+  ggplot(aes(x = log_gdp, y = life_expectancy)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm",
+              formula = "y ~ 0 + x") +
+  theme_bw()
 
 # Play around with predictions --------------------------------------------
 
@@ -93,6 +102,10 @@ clean_gapminder %>%
 
 
 
+# Multiple linear regression ----------------------------------------------
+
+multi_lm <- lm(life_expectancy ~ log_gdp + fertility, data = clean_gapminder)
+summary(multi_lm)
 
 
 
