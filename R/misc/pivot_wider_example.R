@@ -21,3 +21,22 @@ nfl_wide_fgs <- nfl_fgs %>%
               names_glue = "qtr{qtr}_{.value}",
               values_from = fg_perc:ave_kick_dist)
 
+nfl_qtr1_stats <- nfl_wide_fgs %>%
+  dplyr::select(kicker_player_name, posteam, contains("qtr1")) %>%
+  pivot_longer(cols = -c(kicker_player_name, posteam),
+               names_to = "fg_stat", values_to = "qtr1_value") %>%
+  mutate(fg_stat = str_remove(fg_stat, "qtr1_"))
+
+nfl_qtr2_stats <- nfl_wide_fgs %>%
+  dplyr::select(kicker_player_name, posteam, contains("qtr2")) %>%
+  pivot_longer(cols = -c(kicker_player_name, posteam),
+               names_to = "fg_stat", values_to = "qtr2_value") %>%
+  mutate(fg_stat = str_remove(fg_stat, "qtr2_"))
+
+nfl_qtr_diff_table <- nfl_qtr1_stats %>%
+  inner_join(nfl_qtr2_stats, by = c("kicker_player_name", 
+                                    "posteam", "fg_stat")) %>%
+  mutate(value_diff = qtr1_value - qtr2_value)
+
+
+
