@@ -55,4 +55,3 @@ cv_model_pls <- train(
   preProcess = c("center", "scale"),
   tuneLength = ncol(nfl_model_data) - 1)
 ggplot(cv_model_pls) + theme_bw()
-cv_model_pls$finalModel$
