@@ -1,4 +1,4 @@
-# PURPOSE: Multinomial logit regression and mixed effects models
+# PURPOSE: Multinomial logit regression example
 
 
 # Load the data -----------------------------------------------------------
@@ -67,18 +67,6 @@ ep_cv_loso_calibration %>%
         legend.position = c(1, .05), legend.justification = c(1, 0)) +
   facet_wrap(~ next_score_type, ncol = 4)
 
-
-
-
-# Load NFL passing plays --------------------------------------------------
-
-nfl_passing_plays <- 
-  read_csv("http://www.stat.cmu.edu/cmsac/sure/2022/materials/data/sports/eda_projects/nfl_passing_plays_2021.csv") %>%
-  # Only keep rows with passer and receiver information known:
-  filter(!is.na(passer_player_id), !is.na(receiver_player_id), !is.na(epa)) %>%
-  # Combine passer and receiver unique IDs:
-  mutate(passer_name_id = paste0(passer_player_name, ":", passer_player_id),
-         receiver_name_id = paste0(receiver_player_name, ":", receiver_player_id))
 
 
 
